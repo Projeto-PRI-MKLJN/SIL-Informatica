@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>S.I.L - Login</title>
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="auth-container">
+        <div class="container">
+            <header class="auth-header">
+                <h1>Entrar no S.I.L</h1>
+                <p class="auth-subtitle">Acesse seu dicionário técnico de Libras.</p>
+            </header>
+
+            <div th:if="${param.error}" class="alert-error">
+                E-mail ou senha inválidos.
+            </div>
+
+            <form th:action="@{/login}" method="POST" class="form-auth">
+                <div class="form-group">
+                    <label for="username">E-mail</label>
+                    <input type="email" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-block">Entrar</button>
+            </form>
+            <p class="auth-footer">Novo por aqui? <a th:href="@{/usuarios/novo}">Crie uma conta</a></p>
+        </div>
+    </main>
+</body>
+</html>

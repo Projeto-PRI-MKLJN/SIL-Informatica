@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>S.I.L - Dicionário de Libras</title>
+    <link rel="stylesheet" href="/css/style.css" th:href="@{/css/style.css}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments :: cabecalho}"></div>
+
+    <main class="container py-4">
+
+        <header class="auth-header text-center mb-5">
+            <h1 class="display-4 text-primary">Dicionário de TI em Libras</h1>
+            <p class="text-muted">Explore os sinais por categoria ou pesquise abaixo.</p>
+
+            <div class="filter-bar mt-3">
+                <a th:href="@{/sinais}" class="btn-filter">Todos</a>
+                <a th:href="@{/sinais(cat='Redes')}" class="btn-filter">Redes</a>
+                <a th:href="@{/sinais(cat='Dev')}" class="btn-filter">Dev</a>
+                <a th:href="@{/sinais(cat='Hardware')}" class="btn-filter">Hardware</a>
+            </div>
+
+            <div class="search-box mt-4">
+                <input type="text" id="searchSinal" placeholder="🔍 Pesquise um termo (ex: DNS, Samba...)" class="form-control">
+            </div>
+        </header>
+
+        <div class="sinal-grid">
+
+            <div th:each="sinal : ${listaSinais}" class="card-sinal shadow-sm">
+
+                <span class="badge" th:text="${sinal.categoria}">Categoria</span>
+
+                <div>
+                <img src="@{/img/logo-temp.png}" th:src="@{/img/bela-paisagem.png}" class="img-fluid" alt="Logo em breve">
+                </div>
+
+                <div class="card-body">
+                    <h2 th:text="${sinal.termo}" class="h4 text-uppercase">Termo</h2>
+                    <p th:text="${#strings.abbreviate(sinal.descricao, 100)}" class="text-muted small">...</p>
+                </div>
+
+                <div class="card-video">
+                    <div class="card-video bg-dark d-flex align-items-center justify-content-center">
+                    <p class="text-white">🎥 Vídeo em Produção...</p>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 text-center">
+                    <a th:href="@{/sinais/detalhes/{id}(id=${sinal.id})}" class="btn-sm btn-primary">Ver Sinal Completo</a>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(listaSinais)}" class="alert alert-warning w-100 text-center">
+                Nenhum sinal encontrado para esta categoria.
+            </div>
+
+        </div>
+    </main>
+
+    <script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>

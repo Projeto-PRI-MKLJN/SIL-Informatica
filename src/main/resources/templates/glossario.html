@@ -1,0 +1,20 @@
+<nav th:replace="~{fragments/geral :: cabecalho}"></nav>
+<main class="container">
+    <header class="auth-header">
+        <h1>Índice Alfabético</h1>
+    </header>
+
+    <div class="alphabet-nav">
+        <a th:each="letra : ${alfabeto}" 
+           th:href="@{/sinais/busca(letra=${letra})}" 
+           th:text="${letra}" 
+           class="btn-letter"></a>
+    </div>
+
+    <div class="sinal-grid">
+        <div th:each="sinal : ${listaSinais}" class="card-sinal">
+            <h3 th:text="${sinal.termo}">Termo</h3>
+            <a th:href="@{/sinais/detalhes/{id}(id=${sinal.id})}" class="btn-link">Ver sinal</a>
+        </div>
+    </div>
+</main>

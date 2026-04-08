@@ -1,0 +1,36 @@
+<nav th:replace="~{fragments/geral :: cabecalho}"></nav>
+<main class="container">
+    <header class="auth-header">
+        <h1 th:text="${sinal.id == null} ? 'Novo Sinal' : 'Editar Sinal'">Cadastro de Sinal</h1>
+    </header>
+
+    <form th:action="@{/sinais/salvar}" th:object="${sinal}" method="POST" class="form-auth">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-group">
+            <label for="termo">Termo Técnico</label>
+            <input type="text" th:field="*{termo}" required placeholder="Ex: Full Stack">
+        </div>
+
+        <div class="form-group">
+            <label for="categoria">Categoria</label>
+            <select th:field="*{categoria}" class="form-select">
+                <option value="Redes">Redes</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Programacao">Programação</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="descricao">Descrição Técnica</label>
+            <textarea th:field="*{descricao}" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="videoUrl">Link do Vídeo (Sinal)</label>
+            <input type="url" th:field="*{videoUrl}" placeholder="https://youtube.com/...">
+        </div>
+
+        <button type="submit" class="btn btn-block">Salvar Alterações</button>
+    </form>
+</main>
