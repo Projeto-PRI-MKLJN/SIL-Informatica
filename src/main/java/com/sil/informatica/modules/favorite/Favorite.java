@@ -1,7 +1,7 @@
 package com.sil.informatica.modules.favorite;
 
+import com.sil.informatica.modules.sign.Sign;
 import com.sil.informatica.modules.user.User;
-import com.sil.informatica.modules.sign.model.Sign;
 import jakarta.persistence.*;
 
 @Entity
