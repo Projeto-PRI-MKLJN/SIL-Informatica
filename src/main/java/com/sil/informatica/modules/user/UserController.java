@@ -20,19 +20,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    /**
-     * Exibe o formulário de cadastro de usuário.
-     */
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
         return "user/register";
     }
 
-    /**
-     * Processa a criação de um novo usuário.
-     * Utiliza @Valid para validar os dados do usuário e BindingResult para capturar erros.
-     */
     @PostMapping("/register")
     public String registerUser(@Valid User user, BindingResult result, Model model) {
         if (result.hasErrors()) {

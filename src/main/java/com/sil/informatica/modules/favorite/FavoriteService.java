@@ -1,43 +1,39 @@
 package com.sil.informatica.modules.favorite;
 
+import com.sil.informatica.modules.sign.Sign;
 import com.sil.informatica.modules.user.User;
-import com.sil.informatica.modules.sign.model.Sign;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
 
-    @Autowired
     public FavoriteService(FavoriteRepository favoriteRepository) {
         this.favoriteRepository = favoriteRepository;
     }
 
-    /**
-     * Lista todos os favoritos de um determinado usuário.
-     */
-    public List<Favorite> listByUser(User user) {
-        return favoriteRepository.findByUser(user);
-    }
-
-    /**
-     * Deleta um favorito pelo seu ID.
-     */
-    public void deleteFavorite(Long id) {
-        favoriteRepository.deleteById(id);
-    }
-
-    /**
-     * Adiciona um favorito, garantindo que o usuário não favorite o mesmo sinal duas vezes.
-     */
     public Favorite addFavorite(User user, Sign sign) {
-        if (favoriteRepository.existsByUserAndSign(user, sign)) {
-            throw new RuntimeException("Usuário já favoritou este sinal.");
+        Optional<Favorite> existing = favoriteRepository.findByUserAndSign(user, sign);
+        if (existing.isPresent()) {
+            return existing.get();
         }
         Favorite favorite = new Favorite(user, sign);
         return favoriteRepository.save(favorite);
+    }
+
+    public void removeFavorite(Long id) {
+        favoriteRepository.deleteById(id);
+    }
+
+    public List<Favorite> listFavoritesByUser(User user) {
+        return favoriteRepository.findByUser(user);
+    }
+
+    public Optional<Favorite> findById(Long id) {
+        return favoriteRepository.findById(id);
     }
 }

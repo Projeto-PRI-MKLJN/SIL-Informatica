@@ -1,68 +1,55 @@
 package com.sil.informatica.modules.favorite;
 
+import com.sil.informatica.modules.sign.Sign;
+import com.sil.informatica.modules.sign.SignService;
 import com.sil.informatica.modules.user.User;
-import com.sil.informatica.modules.sign.model.Sign;
-import com.sil.informatica.modules.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.sil.informatica.modules.user.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-@Controller
-@RequestMapping("/favorites")
+@RestController
+@RequestMapping("/api/favorites")
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final SignService signService;
 
-    @Autowired
-    public FavoriteController(FavoriteService favoriteService, UserRepository userRepository) {
+    public FavoriteController(FavoriteService favoriteService, UserService userService, SignService signService) {
         this.favoriteService = favoriteService;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.signService = signService;
     }
 
-    /**
-     * Lista os favoritos do usuário mockado (ID 1).
-     */
-    @GetMapping
-    public String listFavorites(Model model) {
-        User user = getMockUser();
-        List<Favorite> favorites = favoriteService.listByUser(user);
-        model.addAttribute("favorites", favorites);
-        return "favorite/list";
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Favorite> addFavorite(@RequestParam Long userId, @RequestParam Long signId) {
+        User user = userService.findById(userId).orElse(null);
+        Sign sign = signService.findById(signId).orElse(null);
+
+        if (user == null || sign == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(favoriteService.addFavorite(user, sign));
     }
 
-    /**
-     * Adiciona um favorito para o usuário mockado (ID 1).
-     * O sinal é recebido como parâmetro.
-     */
-    @PostMapping("/add")
-    public String addFavorite(@RequestParam("id_sinal") Long idSinal) {
-        User user = getMockUser();
-        
-        // Mocking the Sign object (assuming Sign has a simple constructor with ID)
-        Sign sign = new Sign();
-        sign.setId(idSinal);
-        
-        favoriteService.addFavorite(user, sign);
-        return "redirect:/favorites";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removeFavorite(@PathVariable Long id) {
+        if (favoriteService.findById(id).isPresent()) {
+            favoriteService.removeFavorite(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    /**
-     * Remove um favorito por ID.
-     */
-    @PostMapping("/remove/{id}")
-    public String removeFavorite(@PathVariable("id") Long id) {
-        favoriteService.deleteFavorite(id);
-        return "redirect:/favorites";
-    }
-
-    /**
-     * Busca um usuário Mockado de ID 1 para simular a ausência de autenticação nesta etapa.
-     */
-    private User getMockUser() {
-        return userRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Usuário mock de ID 1 não encontrado. Favor criar um usuário no banco para testes."));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Favorite>> listFavorites(@PathVariable Long userId) {
+        return userService.findById(userId)
+                .map(user -> ResponseEntity.ok(favoriteService.listFavoritesByUser(user)))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
