@@ -2,20 +2,29 @@ package com.sil.informatica.modules.admin;
 
 import com.sil.informatica.modules.sign.Sign;
 import com.sil.informatica.modules.sign.SignRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+/// Responsável pela carga inicial de dados (seeding) no banco de dados.
+///
+/// Este componente popula o sistema com termos técnicos iniciais se a tabela estiver vazia.
 @Component
 public class SignSeeder implements CommandLineRunner {
 
     private final SignRepository signRepository;
 
+    @Autowired
     public SignSeeder(SignRepository signRepository) {
         this.signRepository = signRepository;
     }
 
+    /// Executa a lógica de seeding ao iniciar a aplicação.
+    ///
+    /// @param args Argumentos de linha de comando.
+    /// @throws Exception Caso ocorra erro durante a persistência.
     @Override
     public void run(String... args) throws Exception {
         if (signRepository.count() == 0) {
