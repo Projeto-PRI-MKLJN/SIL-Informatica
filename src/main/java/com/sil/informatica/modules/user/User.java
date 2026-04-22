@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
+/// Representa um usuário autenticável do sistema SIL-Informatica.
+///
+/// Esta entidade contém os dados cadastrais, e-mail único e o papel ([role]) 
+/// de acesso do usuário no sistema.
 @Entity
 @Table(name = "users")
 public class User {
@@ -32,9 +36,16 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    /// Construtor padrão exigido pelo JPA.
     public User() {
     }
 
+    /// Construtor para criação de novos usuários com definição de permissões.
+    ///
+    /// @param name Nome completo do usuário.
+    /// @param email Endereço de e-mail único para login.
+    /// @param password Senha criptografada.
+    /// @param role Papel de acesso (ex: ADMIN, USER).
     public User(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;
@@ -84,8 +95,10 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         User user = (User) o;
         return Objects.equals(id, user.id);
     }
