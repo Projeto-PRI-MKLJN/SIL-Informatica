@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('S.I.L - ' + sign.term)}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container" style="margin-top: 3rem;">
+        <div class="animate-fade">
+            <h1 th:text="${sign.term}" style="font-size: 3.5rem; color: var(--cor-primary-dark); font-family: 'Outfit', sans-serif;">Termo</h1>
+            <div class="categoria-tag" th:text="${sign.category}" style="margin-bottom: 2rem;">Categoria</div>
+            
+            <div class="video-container" style="text-align: center; margin: 2rem 0; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <div th:if="${sign.videoUrl != null && !sign.videoUrl.isEmpty()}" style="width: 100%; aspect-ratio: 16/9;">
+                    <iframe th:if="${#strings.contains(sign.videoUrl, 'youtube.com')}" width="100%" height="100%" th:src="${#strings.replace(sign.videoUrl, 'watch?v=', 'embed/')}" frameborder="0" allowfullscreen></iframe>
+                    <video th:unless="${#strings.contains(sign.videoUrl, 'youtube.com')}" controls style="width: 100%; height: 100%;"><source th:src="${sign.videoUrl}" type="video/mp4"></video>
+                </div>
+                <div th:unless="${sign.videoUrl != null && !sign.videoUrl.isEmpty()}" style="color: white; padding: 4rem;">
+                    <p style="font-size: 1.5rem;">📹 Vídeo em fase de produção</p>
+                </div>
+            </div>
+            
+            <section style="margin-top: 3rem;">
+                <h2 style="font-family: 'Outfit', sans-serif; color: var(--cor-primary-dark);">Descrição</h2>
+                <p th:text="${sign.description}" style="font-size: 1.2rem; line-height: 1.8; color: var(--cor-text-secondary); margin-bottom: 3rem; white-space: pre-wrap;">Descrição completa...</p>
+            </section>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 3rem; border-top: 1px solid var(--cor-border); padding-top: 2rem;">
+                <form th:action="@{/favorites/add}" method="post">
+                    <input type="hidden" name="userId" value="1">
+                    <input type="hidden" name="signId" th:value="${sign.id}">
+                    <button type="submit" class="btn">★ Adicionar aos Favoritos</button>
+                </form>
+                <a th:href="@{/signs}" class="btn btn-secondary">← Voltar</a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
