@@ -36,7 +36,7 @@ public class SignController {
         }
         model.addAttribute("signs", signs);
         model.addAttribute("query", term);
-        return "sign/list";
+        return "sign/index";
     }
 
     /// Renderiza os detalhes de um sinal específico.
@@ -52,5 +52,12 @@ public class SignController {
                     return "sign/detail";
                 })
                 .orElse("redirect:/signs");
+    }
+
+    /// Exibe o índice alfabético (A-Z) dos sinais.
+    @GetMapping("/glossary")
+    public String showGlossaryIndex(Model model) {
+        model.addAttribute("signs", signService.findAll());
+        return "sign/glossary";
     }
 }
