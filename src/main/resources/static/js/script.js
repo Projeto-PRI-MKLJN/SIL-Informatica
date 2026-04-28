@@ -1,103 +1,96 @@
 /**
- * S.I.L - Info (Sinais em Libras para Informática)
- * Script Principal de Interatividade e UX
+ * S.I.L - INFO - Sistema para Intérpretes de Libras na Área da Informática
+ * Script de Interatividade e UX (Otimizado para Spring Boot MVC)
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("S.I.L - Sistema Iniciado com Sucesso.");
+const ThemeManager = {
+    currentTheme: 'light',
 
-    // --- 1. BUSCA EM TEMPO REAL (Para list.html e glossario.html) ---
-    const searchInput = document.getElementById('searchSinal');
-    const sinalCards = document.querySelectorAll('.card-sinal');
+    init() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        this.setTheme(savedTheme);
+        this.addToggleButton();
+    },
 
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            
-            sinalCards.forEach(card => {
-                const title = card.querySelector('h2, h3').textContent.toLowerCase();
-                const description = card.querySelector('p').textContent.toLowerCase();
-                
-                // Se o termo estiver no título ou na descrição, mostra o card
-                if (title.includes(term) || description.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+    setTheme(theme) {
+        this.currentTheme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        this.updateToggleButton();
+    },
+
+    toggleTheme() {
+        const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+    },
+
+    addToggleButton() {
+        const headerContent = document.querySelector('.header-content');
+        if (headerContent && !document.getElementById('theme-toggle-btn')) {
+            const button = document.createElement('button');
+            button.id = 'theme-toggle-btn';
+            button.className = 'theme-toggle';
+            button.onclick = () => this.toggleTheme();
+            headerContent.appendChild(button);
+            this.updateToggleButton();
+        }
+    },
+
+    updateToggleButton() {
+        const button = document.getElementById('theme-toggle-btn');
+        if (!button) return;
+
+        if (this.currentTheme === 'light') {
+            button.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z"/></svg>
+                <span>Escuro</span>
+            `;
+        } else {
+            button.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,6.65C6.9,7.16 6.36,7.78 5.94,8.5C5.5,9.24 5.25,10 5.11,10.79L3.34,7M3.36,17L5.12,13.23C5.26,14 5.53,14.78 5.95,15.5C6.37,16.24 6.91,16.86 7.5,17.37L3.36,17M20.65,7L18.88,10.79C18.74,10 18.47,9.23 18.05,8.5C17.63,7.78 17.1,7.15 16.5,6.64L20.65,7M20.64,17L16.5,17.36C17.09,16.85 17.62,16.22 18.04,15.5C18.46,14.77 18.73,14 18.87,13.21L20.64,17M12,22L9.59,18.56C10.33,18.83 11.14,19 12,19C12.82,19 13.63,18.83 14.37,18.56L12,22Z"/></svg>
+                <span>Claro</span>
+            `;
+        }
     }
+};
 
-    // --- 2. SEGURANÇA: CONFIRMAÇÃO DE EXCLUSÃO (Para profile.html e admin-list.html) ---
-    const dangerForms = document.querySelectorAll('form[action*="remover"], form[action*="excluir"]');
-    
-    dangerForms.forEach(form => {
-        form.addEventListener('submit', (e) => {
-            const confirmacao = confirm("CUIDADO: Esta ação removerá o item permanentemente. Deseja continuar?");
-            if (!confirmacao) {
-                e.preventDefault(); // Cancela o envio do formulário
-            }
-        });
-    });
+/**
+ * Filtro de busca simplificado para o Glossário
+ */
+function filtrarSinais() {
+    const input = document.getElementById('search-input');
+    if (!input) return;
 
-    // --- 3. UX: ANIMAÇÃO DE CARDS (Visual de TI moderno) ---
-    sinalCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.borderColor = '#007bff';
-            card.style.boxShadow = '0 8px 15px rgba(0,0,0,0.1)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.borderColor = '#ddd';
-            card.style.boxShadow = 'none';
-        });
-    });
+    const termo = input.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.sinal-card');
 
-    // --- 4. FEEDBACK DE "COPIADO" (Para compartilhar termos) ---
-    // Se você clicar no título de um sinal, ele copia o link da página
-    const shareTitles = document.querySelectorAll('.detail-card h1');
-    shareTitles.forEach(title => {
-        title.style.cursor = 'pointer';
-        title.title = "Clique para copiar o link do sinal";
-        
-        title.addEventListener('click', () => {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Link do sinal copiado para a área de transferência!");
-        });
-    });
-    // Lógica de Dark Mode (Ativada por um botão com id="darkModeToggle")
-const toggleBtn = document.getElementById('darkModeToggle');
-if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (text.includes(termo)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
     });
 }
 
-// --- 5. LÓGICA DE DARK MODE (Exigência do Critério de Aceite) ---
-    const btnDarkMode = document.getElementById('btn-dark-mode');
-    const body = document.body;
+/**
+ * Gerador de Thumbnails para vídeos (se houver elementos de vídeo na página)
+ */
+async function processarThumbnails() {
+    const videoThumbs = document.querySelectorAll('.load-thumb');
+    // Implementação futura conforme necessidade do projeto
+}
 
-    // Verifica se o usuário já tinha uma preferência salva
-    if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
-    }
-
-    if (btnDarkMode) {
-        btnDarkMode.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            
-            // Salva a preferência para não perder ao mudar de página
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
-    }
-
-
-
+// Inicia o Gerenciador de Tema ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    ThemeManager.init();
     
+    // Adiciona listener de busca se o input existir
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', filtrarSinais);
+    }
+
+    console.log("S.I.L - Interatividade Iniciada.");
 });
