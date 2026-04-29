@@ -9,7 +9,7 @@
                 <p style="color: var(--cor-text-secondary);">Cadastre-se para acessar o dicionário completo.</p>
             </header>
 
-            <form th:action="@{/users/register}" th:object="${user}" method="post">
+            <form th:action="@{/auth/register}" th:object="${user}" method="post">
                 <div class="form-group">
                     <label>Nome Completo</label>
                     <input type="text" th:field="*{name}" required placeholder="Seu nome completo">
@@ -36,7 +36,7 @@
                 <button type="submit" class="btn" style="width: 100%;">Cadastrar</button>
                 
                 <p style="margin-top: 2rem; text-align: center; color: var(--cor-text-secondary);">
-                    Já tem conta? <a th:href="@{/login}" style="color: var(--cor-primary); font-weight: bold; text-decoration: none;">Entrar</a>
+                    Já tem conta? <a th:href="@{/auth/login}" style="color: var(--cor-primary); font-weight: bold; text-decoration: none;">Entrar</a>
                 </p>
             </form>
         </div>

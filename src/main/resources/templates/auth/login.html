@@ -9,7 +9,7 @@
                 <p style="color: var(--cor-text-secondary);">Acesse seu dicionário técnico de Libras.</p>
             </header>
 
-            <form th:action="@{/login}" method="post">
+            <form th:action="@{/auth/login}" method="post">
                 <div th:if="${param.error}" style="background: #fee2e2; color: #ef4444; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; text-align: center;">
                     E-mail ou senha incorretos.
                 </div>
@@ -26,7 +26,7 @@
                 <button type="submit" class="btn" style="width: 100%;">Entrar</button>
                 
                 <p style="margin-top: 2rem; text-align: center; color: var(--cor-text-secondary);">
-                    Não tem conta? <a th:href="@{/users/new}" style="color: var(--cor-primary); font-weight: bold; text-decoration: none;">Cadastre-se</a>
+                    Não tem conta? <a th:href="@{/auth/register}" style="color: var(--cor-primary); font-weight: bold; text-decoration: none;">Cadastre-se</a>
                 </p>
                 
                 <div style="margin-top: 2rem; padding: 1rem; background: var(--cor-primary-light); border-radius: 8px; font-size: 0.85rem; color: var(--cor-primary-dark);">

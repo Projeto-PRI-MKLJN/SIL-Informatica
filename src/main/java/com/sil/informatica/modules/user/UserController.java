@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.validation.Valid;
 
-/// Controller responsável pela fluxos de cadastro e gerenciamento de conta do usuário.
+/// Controller responsável pelo gerenciamento de conta e perfil do usuário logado.
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -21,44 +21,15 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new User());
-        return "user/register";
-    }
-
-    @PostMapping("/register")
-    public String registerUser(@Valid User user, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "user/register";
-        }
-        try {
-            userService.save(user);
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "user/register";
-        }
-        return "user/success";
-    }
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
-        User mockUser = new User();
-        mockUser.setName("Usuário");
-        mockUser.setEmail("teste@sil.com");
-        
-        model.addAttribute("user", mockUser);
         model.addAttribute("favoritesCount", 0);
         return "user/dashboard";
     }
 
     @GetMapping("/profile")
     public String showProfile(Model model) {
-        User mockUser = new User();
-        mockUser.setName("Usuário");
-        mockUser.setEmail("teste@sil.com");
-        
-        model.addAttribute("user", mockUser);
         return "user/profile";
     }
 }
