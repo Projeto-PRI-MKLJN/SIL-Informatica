@@ -26,9 +26,11 @@ public class UserService {
     /// @return O usuário persistido com sucesso.
     /// @throws RuntimeException Caso o e-mail já esteja em uso.
     public User save(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("E-mail já cadastrado.");
-        }
+        userRepository.findByEmail(user.getEmail()).ifPresent(existingUser -> {
+            if (user.getId() == null || !existingUser.getId().equals(user.getId())) {
+                throw new RuntimeException("E-mail já cadastrado.");
+            }
+        });
         return userRepository.save(user);
     }
 
@@ -47,4 +49,19 @@ public class UserService {
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
+
+    /// Recupera todos os usuários cadastrados.
+    ///
+    /// @return Lista de todos os usuários.
+    public java.util.List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    /// Remove um usuário pelo seu ID.
+    ///
+    /// @param id O ID do usuário a ser removido.
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
 }
+

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('S.I.L - Cadastro')}"></head>
+<body>
+    <div class="auth-container">
+        <div class="container animate-fade">
+            <header style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.5rem; color: var(--cor-primary-dark);">Criar Conta</h1>
+                <p style="color: var(--cor-text-secondary);">Cadastre-se para acessar o dicionário completo.</p>
+            </header>
+
+            <form th:action="@{/auth/register}" th:object="${user}" method="post">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" th:field="*{name}" required placeholder="Seu nome completo">
+                    <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" th:field="*{email}" required placeholder="seu@email.com">
+                    <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" th:field="*{password}" required minlength="6" placeholder="Mínimo 6 caracteres">
+                    <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirmar Senha</label>
+                    <input type="password" id="cadastro-confirma" required minlength="6" placeholder="Digite a senha novamente">
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">Cadastrar</button>
+                
+                <p style="margin-top: 2rem; text-align: center; color: var(--cor-text-secondary);">
+                    Já tem conta? <a th:href="@{/auth/login}" style="color: var(--cor-primary); font-weight: bold; text-decoration: none;">Entrar</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

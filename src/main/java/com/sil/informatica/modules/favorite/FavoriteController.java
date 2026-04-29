@@ -27,6 +27,12 @@ public class FavoriteController {
         this.signService = signService;
     }
 
+    /// Rota padrão de favoritos (redireciona para o usuário logado).
+    @GetMapping
+    public String index() {
+        return "redirect:/favorites/user/1";
+    }
+
     /// Adiciona um novo sinal aos favoritos de um usuário.
     ///
     /// @param userId Identificador do [User].
@@ -64,8 +70,7 @@ public class FavoriteController {
         return userService.findById(userId)
                 .map(user -> {
                     model.addAttribute("favorites", favoriteService.listFavoritesByUser(user));
-                    model.addAttribute("user", user);
-                    return "favorite/list";
+                    return "favorite/index";
                 })
                 .orElse("redirect:/");
     }

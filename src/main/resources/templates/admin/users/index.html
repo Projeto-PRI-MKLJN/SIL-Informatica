@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('S.I.L - Gestão de Usuários')}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container" style="margin-top: 3rem;">
+        <h1 style="font-family: 'Outfit', sans-serif;">Gerenciar Usuários</h1>
+        <p style="margin-bottom: 2rem; color: var(--cor-text-secondary);" th:text="'Total de usuários cadastrados: ' + ${users.size()}">Total: 0</p>
+        
+        <div class="table-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+            <table class="animate-fade">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}">
+                        <td><strong th:text="${u.name}">Nome</strong></td>
+                        <td th:text="${u.email}">E-mail</td>
+                        <td><span class="categoria-tag" th:text="${u.role}">USER</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <a th:href="@{/admin/users/edit/{id}(id=${u.id})}" class="btn btn-small btn-secondary" style="text-decoration: none;">Editar</a>
+                                <a th:href="@{/admin/users/delete/{id}(id=${u.id})}" class="btn btn-small" style="text-decoration: none; background: var(--cor-error);" onclick="return confirm('Desativar este usuário?')">Remover</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

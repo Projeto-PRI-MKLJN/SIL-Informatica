@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('S.I.L - Favoritos')}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container" style="margin-top: 3rem;">
+        <h1 style="font-family: 'Outfit', sans-serif;">Meus Favoritos</h1>
+        <p th:text="${favorites.size() + (favorites.size() == 1 ? ' sinal salvo' : ' sinais salvos')}" style="margin-bottom: 2rem; color: var(--cor-text-secondary);"></p>
+
+        <div class="sinais-grid animate-fade">
+            <div th:each="favorite : ${favorites}" class="sinal-card" th:onclick="|location.href='/signs/' + ${favorite.sign.id}|" style="cursor: pointer;">
+                <h3 th:text="${favorite.sign.term}">Termo</h3>
+                <p th:text="${#strings.abbreviate(favorite.sign.description, 80)}" style="font-size: 0.9rem; color: var(--cor-text-secondary);">Descrição...</p>
+                <div class="categoria-tag" th:text="${favorite.sign.category}">Categoria</div>
+                
+                <form th:action="@{/favorites/remove/{id}(id=${favorite.id})}" method="post" style="margin-top: 1rem;">
+                    <input type="hidden" name="userId" th:value="${user.id}">
+                    <button type="submit" style="background: none; border: none; color: var(--cor-error); font-weight: bold; cursor: pointer; padding: 0;">Remover</button>
+                </form>
+            </div>
+
+            <div th:if="${#lists.isEmpty(favorites)}" class="empty-state" style="grid-column: 1 / -1;">
+                <p style="font-size: 1.5rem; margin-bottom: 1rem;">🌟 Você ainda não tem favoritos</p>
+                <a th:href="@{/signs}" class="btn">Explorar Sinais</a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
