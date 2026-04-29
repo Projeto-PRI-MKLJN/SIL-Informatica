@@ -30,7 +30,7 @@ public class AdminSignController {
     @GetMapping
     public String listSigns(Model model) {
         model.addAttribute("signs", signService.findAll());
-        return "admin/index";
+        return "admin/signs/index";
     }
 
     /// Exibe o formulário de criação de um novo sinal.
@@ -40,7 +40,7 @@ public class AdminSignController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("sign", new Sign());
-        return "admin/form";
+        return "admin/signs/form";
     }
 
     /// Processa a criação de um novo sinal.
@@ -51,7 +51,7 @@ public class AdminSignController {
     @PostMapping
     public String createSign(@Valid Sign sign, BindingResult result) {
         if (result.hasErrors()) {
-            return "admin/form";
+            return "admin/signs/form";
         }
         signService.save(sign);
         return "redirect:/admin/signs";
@@ -67,7 +67,7 @@ public class AdminSignController {
         return signService.findById(id)
                 .map(sign -> {
                     model.addAttribute("sign", sign);
-                    return "admin/form";
+                    return "admin/signs/form";
                 })
                 .orElse("redirect:/admin/signs");
     }
@@ -81,7 +81,7 @@ public class AdminSignController {
     @PostMapping("/{id}")
     public String updateSign(@PathVariable Long id, @Valid Sign sign, BindingResult result) {
         if (result.hasErrors()) {
-            return "admin/form";
+            return "admin/signs/form";
         }
         return signService.findById(id)
                 .map(existingSign -> {
