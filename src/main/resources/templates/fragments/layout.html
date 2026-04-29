@@ -16,9 +16,10 @@
                 <a th:href="@{/signs}">Início</a>
                 <a th:href="@{/favorites}">Favoritos</a>
                 <a th:href="@{/home/about}">Sobre</a>
-                <a th:href="@{/admin/signs}" th:if="${user != null and user.role == 'ADMIN'}">Gerenciar Sinais</a>
-                <a th:href="@{/logout}" th:if="${user != null}">Sair</a>
-                <a th:href="@{/login}" th:if="${user == null}">Entrar</a>
+                <a th:href="@{/admin/signs}" th:if="${currentUser != null and currentUser.role == 'ADMIN'}">Gerenciar Sinais</a>
+                <a th:href="@{/admin/users}" th:if="${currentUser != null and currentUser.role == 'ADMIN'}">Gerenciar Usuários</a>
+                <a th:href="@{/auth/logout}" th:if="${currentUser != null}">Sair</a>
+                <a th:href="@{/auth/login}" th:if="${currentUser == null}">Entrar</a>
             </nav>
         </div>
     </header>

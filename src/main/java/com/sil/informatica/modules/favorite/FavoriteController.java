@@ -70,7 +70,6 @@ public class FavoriteController {
         return userService.findById(userId)
                 .map(user -> {
                     model.addAttribute("favorites", favoriteService.listFavoritesByUser(user));
-                    model.addAttribute("user", user);
                     return "favorite/index";
                 })
                 .orElse("redirect:/");
