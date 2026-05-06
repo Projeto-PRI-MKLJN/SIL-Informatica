@@ -8,6 +8,57 @@
         <h1 style="font-family: 'Outfit', sans-serif;">Gerenciar Usuários</h1>
         <p style="margin-bottom: 2rem; color: var(--cor-text-secondary);" th:text="'Total de usuários cadastrados: ' + ${users.size()}">Total: 0</p>
         
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+            <button data-modal-open="user-modal" class="btn" style="display: inline-block;">+ Adicionar Novo Usuário</button>
+            <a th:href="@{/admin}" class="btn btn-secondary" style="display: inline-block; text-decoration: none;">← Voltar ao Painel Admin</a>
+        </div>
+
+        <!-- Modal de Cadastro/Edição de Usuário -->
+        <div id="user-modal" class="modal" th:object="${user}" th:classappend="${#fields.hasAnyErrors()} ? 'active' : ''">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="user-modal-title" style="font-family: 'Outfit', sans-serif; color: var(--cor-primary-dark);">Novo Usuário</h2>
+                    <button class="modal-close" data-modal-close="user-modal">&times;</button>
+                </div>
+                
+                <form id="user-form" th:action="@{/admin/users}" th:object="${user}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" th:field="*{id}" id="user-id">
+                    
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" th:field="*{name}" id="user-name" required placeholder="Nome do usuário">
+                        <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" th:field="*{email}" id="user-email" required placeholder="email@exemplo.com">
+                        <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="user-password-label">Senha Inicial</label>
+                        <input type="password" th:field="*{password}" id="user-password" required placeholder="Mínimo 6 caracteres">
+                        <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Perfil de Acesso</label>
+                        <select th:field="*{role}" id="user-role" required>
+                            <option value="USER">Usuário Comum</option>
+                            <option value="ADMIN">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" id="user-submit-btn" class="btn" style="flex: 1;">Criar Conta</button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" data-modal-close="user-modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
         <div class="table-container" style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
             <table class="animate-fade">
                 <thead>
@@ -25,8 +76,12 @@
                         <td><span class="categoria-tag" th:text="${u.role}">USER</span></td>
                         <td>
                             <div class="action-buttons">
-                                <a th:href="@{/admin/users/edit/{id}(id=${u.id})}" class="btn btn-small btn-secondary" style="text-decoration: none;">Editar</a>
-                                <a th:href="@{/admin/users/delete/{id}(id=${u.id})}" class="btn btn-small" style="text-decoration: none; background: var(--cor-error);" onclick="return confirm('Desativar este usuário?')">Remover</a>
+                                <button type="button" 
+                                        class="btn btn-small btn-secondary" 
+                                        th:data-edit-user="${'{&quot;id&quot;: ' + u.id + ', &quot;name&quot;: &quot;' + #strings.escapeJavaScript(u.name) + '&quot;, &quot;email&quot;: &quot;' + u.email + '&quot;, &quot;role&quot;: &quot;' + u.role + '&quot;}'}">
+                                    Editar
+                                </button>
+                                <a th:href="@{/admin/users/delete/{id}(id=${u.id})}" class="btn btn-small" style="text-decoration: none; background: var(--cor-error);" data-confirm="Desativar este usuário?">Remover</a>
                             </div>
                         </td>
                     </tr>

@@ -8,7 +8,61 @@
         <h1 style="font-family: 'Outfit', sans-serif;">Gerenciar Sinais</h1>
         <p style="margin-bottom: 2rem; color: var(--cor-text-secondary);" th:text="'Total de sinais cadastrados: ' + ${signs.size()}">Total: 0</p>
         
-        <a th:href="@{/admin/signs/new}" class="btn" style="display: inline-block; text-decoration: none;">+ Adicionar Novo Sinal</a>
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+            <button data-modal-open="sign-modal" class="btn" style="display: inline-block;">+ Adicionar Novo Sinal</button>
+            <a th:href="@{/admin}" class="btn btn-secondary" style="display: inline-block; text-decoration: none;">← Voltar ao Painel Admin</a>
+        </div>
+
+        <!-- Modal de Cadastro/Edição de Sinal -->
+        <div id="sign-modal" class="modal" th:object="${sign}" th:classappend="${#fields.hasAnyErrors()} ? 'active' : ''">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title" style="font-family: 'Outfit', sans-serif; color: var(--cor-primary-dark);">Novo Sinal</h2>
+                    <button class="modal-close" data-modal-close="sign-modal">&times;</button>
+                </div>
+                
+                <form id="sign-form" th:action="@{/admin/signs}" th:object="${sign}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" th:field="*{id}" id="sign-id">
+                    
+                    <div class="form-group">
+                        <label>Termo</label>
+                        <input type="text" th:field="*{term}" id="sign-term" required placeholder="Ex: Algoritmo">
+                        <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea th:field="*{description}" id="sign-description" rows="4" required placeholder="Explique o termo..."></textarea>
+                        <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select th:field="*{category}" id="sign-category" required>
+                            <option value="">Selecione...</option>
+                            <option value="Lógica">Lógica</option>
+                            <option value="Estruturas de Dados">Estruturas de Dados</option>
+                            <option value="Banco de Dados">Banco de Dados</option>
+                            <option value="Programação">Programação</option>
+                            <option value="Segurança">Segurança</option>
+                            <option value="Redes">Redes</option>
+                            <option value="Web">Web</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL do Vídeo</label>
+                        <input type="text" th:field="*{videoUrl}" id="sign-videoUrl" placeholder="Ex: https://youtube.com/...">
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn" style="flex: 1;">Salvar</button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" data-modal-close="sign-modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <div class="table-container" style="margin-top: 3rem; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
             <table class="animate-fade">
@@ -27,8 +81,12 @@
                         <td th:text="${#strings.abbreviate(sign.description, 60)}">Descrição...</td>
                         <td>
                             <div class="action-buttons">
-                                <a th:href="@{/admin/signs/edit/{id}(id=${sign.id})}" class="btn btn-small btn-secondary" style="text-decoration: none;">Editar</a>
-                                <a th:href="@{/admin/signs/delete/{id}(id=${sign.id})}" class="btn btn-small" style="text-decoration: none; background: var(--cor-error);" onclick="return confirm('Excluir este sinal permanentemente?')">Remover</a>
+                                <button type="button" 
+                                        class="btn btn-small btn-secondary" 
+                                        th:data-edit-sign="${'{&quot;id&quot;: ' + sign.id + ', &quot;term&quot;: &quot;' + #strings.escapeJavaScript(sign.term) + '&quot;, &quot;category&quot;: &quot;' + sign.category + '&quot;, &quot;description&quot;: &quot;' + #strings.escapeJavaScript(sign.description) + '&quot;, &quot;videoUrl&quot;: &quot;' + sign.videoUrl + '&quot;}'}">
+                                    Editar
+                                </button>
+                                <a th:href="@{/admin/signs/delete/{id}(id=${sign.id})}" sec:authorize="hasRole('ADMIN')" class="btn btn-small" style="text-decoration: none; background: var(--cor-error);" data-confirm="Excluir este sinal permanentemente?">Remover</a>
                             </div>
                         </td>
                     </tr>

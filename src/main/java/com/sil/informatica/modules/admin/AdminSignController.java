@@ -30,69 +30,20 @@ public class AdminSignController {
     @GetMapping
     public String listSigns(Model model) {
         model.addAttribute("signs", signService.findAll());
+        model.addAttribute("sign", new Sign());
         return "admin/signs/index";
     }
 
-    /// Exibe o formulário de criação de um novo sinal.
-    ///
-    /// @param model O modelo do Spring.
-    /// @return O caminho da view do formulário.
-    @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("sign", new Sign());
-        return "admin/signs/form";
-    }
-
-    /// Processa a criação de um novo sinal.
-    ///
-    /// @param sign O objeto [Sign] validado.
-    /// @param result Resultado da validação de formulário.
-    /// @return Redirecionamento ou retorno ao formulário em caso de erro.
+    /// Processa a criação ou atualização de um sinal.
     @PostMapping
-    public String createSign(@Valid Sign sign, BindingResult result) {
+    public String saveSign(@Valid Sign sign, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "admin/signs/form";
+            model.addAttribute("signs", signService.findAll());
+            model.addAttribute("sign", sign);
+            return "admin/signs/index";
         }
         signService.save(sign);
         return "redirect:/admin/signs";
-    }
-
-    /// Exibe o formulário de edição para um sinal existente.
-    ///
-    /// @param id ID do sinal a ser editado.
-    /// @param model O modelo do Spring.
-    /// @return O caminho da view do formulário.
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        return signService.findById(id)
-                .map(sign -> {
-                    model.addAttribute("sign", sign);
-                    return "admin/signs/form";
-                })
-                .orElse("redirect:/admin/signs");
-    }
-
-    /// Processa a atualização de um sinal existente.
-    ///
-    /// @param id ID do sinal.
-    /// @param sign Dados atualizados do sinal.
-    /// @param result Resultado da validação.
-    /// @return Redirecionamento após sucesso ou erro.
-    @PostMapping("/{id}")
-    public String updateSign(@PathVariable Long id, @Valid Sign sign, BindingResult result) {
-        if (result.hasErrors()) {
-            return "admin/signs/form";
-        }
-        return signService.findById(id)
-                .map(existingSign -> {
-                    existingSign.setTerm(sign.getTerm());
-                    existingSign.setDescription(sign.getDescription());
-                    existingSign.setCategory(sign.getCategory());
-                    existingSign.setVideoUrl(sign.getVideoUrl());
-                    signService.save(existingSign);
-                    return "redirect:/admin/signs";
-                })
-                .orElse("redirect:/admin/signs");
     }
 
     /// Remove um sinal do sistema.

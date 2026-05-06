@@ -87,6 +87,27 @@ public class Sign {
         this.videoUrl = videoUrl;
     }
 
+    /**
+     * Extrai a thumbnail do YouTube se a URL for válida.
+     */
+    public String getYoutubeThumbnailUrl() {
+        if (videoUrl == null || videoUrl.isEmpty()) return null;
+        
+        String videoId = null;
+        if (videoUrl.contains("youtube.com/watch?v=")) {
+            videoId = videoUrl.split("v=")[1].split("&")[0];
+        } else if (videoUrl.contains("youtu.be/")) {
+            videoId = videoUrl.split("youtu.be/")[1].split("\\?")[0];
+        } else if (videoUrl.contains("youtube.com/embed/")) {
+            videoId = videoUrl.split("embed/")[1].split("\\?")[0];
+        }
+
+        if (videoId != null) {
+            return "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg";
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
