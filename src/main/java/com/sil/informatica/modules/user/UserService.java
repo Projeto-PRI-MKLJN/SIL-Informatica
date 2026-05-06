@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 /// Serviço responsável pelo gerenciamento de usuários e validação de regras de domínio.
@@ -14,10 +15,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /// Salva um novo usuário no sistema, validando a unicidade do e-mail.
@@ -31,6 +34,22 @@ public class UserService {
                 throw new RuntimeException("E-mail já cadastrado.");
             }
         });
+
+        // Criptografa a senha antes de salvar, se ela estiver presente
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            if (user.getPassword().length() < 6) {
+                throw new RuntimeException("A senha deve ter no mínimo 6 caracteres.");
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else if (user.getId() != null) {
+            // Se for edição e a senha estiver em branco, mantém a senha atual
+            userRepository.findById(user.getId()).ifPresent(existing -> {
+                user.setPassword(existing.getPassword());
+            });
+        } else {
+            throw new RuntimeException("A senha é obrigatória para novos usuários.");
+        }
+        
         return userRepository.save(user);
     }
 

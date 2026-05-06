@@ -40,10 +40,16 @@ public class AuthController {
 
     /// Processa o registro de um novo usuário.
     @PostMapping("/register")
-    public String registerUser(@Valid User user, BindingResult result, Model model) {
+    public String registerUser(@Valid User user, BindingResult result, String confirmPassword, Model model) {
         if (result.hasErrors()) {
             return "auth/register";
         }
+
+        if (confirmPassword == null || !confirmPassword.equals(user.getPassword())) {
+            model.addAttribute("errorMessage", "As senhas não coincidem.");
+            return "auth/register";
+        }
+
         try {
             // Define o papel padrão para novos registros via site
             user.setRole("USER");
