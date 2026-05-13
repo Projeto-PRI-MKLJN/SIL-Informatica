@@ -44,6 +44,24 @@ public class FavoriteService {
         favoriteRepository.deleteById(id);
     }
 
+    /// Remove um favorito pelo usuário e sinal.
+    ///
+    /// @param user O usuário.
+    /// @param sign O sinal.
+    public void removeByUserAndSign(User user, Sign sign) {
+        favoriteRepository.findByUserAndSign(user, sign).ifPresent(favoriteRepository::delete);
+    }
+
+    /// Verifica se um sinal é favorito de um usuário.
+    ///
+    /// @param user O usuário.
+    /// @param sign O sinal.
+    /// @return true se for favorito, false caso contrário.
+    public boolean isFavorite(User user, Sign sign) {
+        if (user == null || sign == null) return false;
+        return favoriteRepository.findByUserAndSign(user, sign).isPresent();
+    }
+
     /// Lista todos os favoritos de um usuário específico.
     ///
     /// @param user O usuário dono dos favoritos.

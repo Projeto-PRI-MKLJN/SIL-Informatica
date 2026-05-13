@@ -10,22 +10,31 @@
             <p style="color: var(--cor-text-secondary); font-size: 1.1rem;">Localize termos pela primeira letra do nome.</p>
         </div>
 
-        <div class="animate-fade" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 4rem; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+        <div class="animate-fade" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 4rem; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
             <a th:each="letter : ${#strings.arraySplit('A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', ',')}" 
-               th:href="@{/signs/search(letter=${letter})}" 
+               th:href="@{/signs/glossary(letter=${letter})}" 
                th:text="${letter}" 
-               class="btn-small btn-secondary" 
-               style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; text-decoration: none;"></a>
+               th:classappend="${currentLetter == letter} ? 'btn-primary' : 'btn-secondary'"
+               class="btn-letter"
+               style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; text-decoration: none; border-radius: 8px; transition: all 0.3s;"></a>
         </div>
 
         <div class="sinais-grid animate-fade">
-            <div th:each="sign : ${signs}" class="sinal-card" th:onclick="|location.href='/signs/' + ${sign.id}|" style="cursor: pointer; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 1.5rem 2rem;">
-                <h3 th:text="${sign.term}" style="margin: 0;">Termo</h3>
-                <span class="btn-view" style="color: var(--cor-primary); font-weight: bold;">Ver Detalhes →</span>
-            </div>
+            <a th:each="sign : ${signs}" th:href="@{/signs/{id}(id=${sign.id})}" class="sinal-card-link">
+                <div class="sinal-card" style="display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 1.5rem;">
+                    <div style="background: var(--cor-primary-light); min-width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--cor-primary-dark); font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <span th:text="${#strings.substring(sign.term,0,1)}">A</span>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 th:text="${sign.term}" style="margin: 0; font-size: 1.15rem; color: var(--cor-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Termo</h3>
+                    </div>
+                    <div style="color: var(--cor-primary); font-size: 1.5rem; font-weight: bold; transition: transform 0.3s;" class="card-arrow">→</div>
+                </div>
+            </a>
             
-            <div th:if="${#lists.isEmpty(signs)}" style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--cor-text-secondary);">
-                <p>Nenhum sinal encontrado para este índice.</p>
+            <div th:if="${#lists.isEmpty(signs)}" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6rem 2rem; color: var(--cor-text-secondary); text-align: center;">
+                <p style="font-size: 1.3rem; margin-bottom: 2rem; max-width: 500px; line-height: 1.5;">Nenhum sinal encontrado para a letra <strong th:text="${currentLetter}" style="color: var(--cor-primary-dark); font-size: 1.5rem;"></strong>.</p>
+                <a th:href="@{/signs/glossary}" class="btn" style="min-width: 180px;">Ver todos os sinais</a>
             </div>
         </div>
     </main>

@@ -1,6 +1,6 @@
 /**
  * S.I.L - INFO - Sistema para Intérpretes de Libras na Área da Informática
- * Script de Interatividade e UX (Otimizado para Spring Boot MVC)
+ * Script de Interatividade e UX (Otimizado para Spring Boot MVC e CSP)
  */
 
 const ThemeManager = {
@@ -30,7 +30,7 @@ const ThemeManager = {
             const button = document.createElement('button');
             button.id = 'theme-toggle-btn';
             button.className = 'theme-toggle';
-            button.onclick = () => this.toggleTheme();
+            button.addEventListener('click', () => this.toggleTheme());
             headerContent.appendChild(button);
             this.updateToggleButton();
         }
@@ -54,9 +54,6 @@ const ThemeManager = {
     }
 };
 
-/**
- * Filtro de busca simplificado para o Glossário
- */
 function filtrarSinais() {
     const input = document.getElementById('search-input');
     if (!input) return;
@@ -66,31 +63,183 @@ function filtrarSinais() {
 
     cards.forEach(card => {
         const text = card.innerText.toLowerCase();
-        if (text.includes(termo)) {
-            card.style.display = 'flex';
-        } else {
-            card.style.display = 'none';
-        }
+        card.style.display = text.includes(termo) ? 'flex' : 'none';
     });
 }
 
-/**
- * Gerador de Thumbnails para vídeos (se houver elementos de vídeo na página)
- */
-async function processarThumbnails() {
-    const videoThumbs = document.querySelectorAll('.load-thumb');
-    // Implementação futura conforme necessidade do projeto
-}
+const MenuManager = {
+    init() {
+        document.addEventListener('click', (e) => {
+            const hamburger = document.getElementById('hamburger');
+            const nav = document.getElementById('main-nav');
+            const overlay = document.getElementById('nav-overlay');
+            
+            if (!hamburger || !nav || !overlay) return;
 
-// Inicia o Gerenciador de Tema ao carregar a página
+            if (hamburger.contains(e.target)) {
+                this.toggleMenu(nav, overlay, hamburger);
+            } else if (e.target === overlay) {
+                this.closeMenu(nav, overlay, hamburger);
+            }
+        });
+    },
+
+    toggleMenu(nav, overlay, hamburger) {
+        const isActive = nav.classList.toggle('active');
+        overlay.classList.toggle('active');
+        hamburger.classList.toggle('active');
+        document.body.style.overflow = isActive ? 'hidden' : '';
+    },
+
+    closeMenu(nav, overlay, hamburger) {
+        nav.classList.remove('active');
+        overlay.classList.remove('active');
+        hamburger.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
+const ModalManager = {
+    open(id, isEdit = false) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            const form = modal.querySelector('form');
+            if (form && !isEdit) {
+                form.reset();
+                const idField = form.elements['id'];
+                if (idField) idField.value = '';
+                
+                const title = modal.querySelector('h2');
+                if (title) {
+                    if (id === 'sign-modal') title.innerText = 'Novo Sinal';
+                    if (id === 'user-modal') title.innerText = 'Novo Usuário';
+                }
+
+                const submitBtn = modal.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    if (id === 'user-modal') submitBtn.innerText = 'Criar Conta';
+                }
+
+                const passwordInput = form.elements['password'];
+                if (passwordInput) {
+                    passwordInput.required = true;
+                    passwordInput.placeholder = 'Mínimo 6 caracteres';
+                }
+            }
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    },
+    close(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+};
+
+window.openEditSignModal = (data) => {
+    const form = document.getElementById('sign-form');
+    if (!form) return;
+
+    document.getElementById('modal-title').innerText = 'Editar Sinal';
+    if (form.elements['id']) form.elements['id'].value = data.id || '';
+    if (form.elements['term']) form.elements['term'].value = data.term || '';
+    if (form.elements['category']) form.elements['category'].value = data.category || '';
+    if (form.elements['description']) form.elements['description'].value = data.description || '';
+    if (form.elements['videoUrl']) form.elements['videoUrl'].value = data.videoUrl || '';
+    
+    ModalManager.open('sign-modal', true);
+};
+
+window.openEditUserModal = (data) => {
+    const form = document.getElementById('user-form');
+    if (!form) return;
+
+    document.getElementById('user-modal-title').innerText = 'Editar Usuário';
+    if (form.elements['id']) form.elements['id'].value = data.id || '';
+    if (form.elements['name']) form.elements['name'].value = data.name || '';
+    if (form.elements['email']) form.elements['email'].value = data.email || '';
+    if (form.elements['role']) form.elements['role'].value = data.role || '';
+    
+    const passwordInput = form.elements['password'];
+    if (passwordInput) {
+        passwordInput.required = false;
+        passwordInput.placeholder = 'Deixe em branco para manter a atual';
+    }
+    
+    const label = document.getElementById('user-password-label');
+    if (label) label.innerText = 'Nova Senha (opcional)';
+    
+    const submitBtn = document.getElementById('user-submit-btn');
+    if (submitBtn) submitBtn.innerText = 'Salvar Alterações';
+    
+    ModalManager.open('user-modal', true);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     ThemeManager.init();
+    MenuManager.init();
     
-    // Adiciona listener de busca se o input existir
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', filtrarSinais);
-    }
+    // Gerenciador de eventos delegado para evitar inline JS (CSP)
+    document.body.addEventListener('click', (e) => {
+        const target = e.target;
+        const openBtn = target.closest('[data-modal-open]');
+        if (openBtn) ModalManager.open(openBtn.dataset.modalOpen);
 
-    console.log("S.I.L - Interatividade Iniciada.");
+        const closeBtn = target.closest('[data-modal-close]');
+        if (closeBtn) ModalManager.close(closeBtn.dataset.modalClose);
+
+        const editSignBtn = target.closest('[data-edit-sign]');
+        if (editSignBtn) {
+            try {
+                window.openEditSignModal(JSON.parse(editSignBtn.dataset.editSign));
+            } catch (err) { console.error(err); }
+        }
+
+        const editUserBtn = target.closest('[data-edit-user]');
+        if (editUserBtn) {
+            try {
+                window.openEditUserModal(JSON.parse(editUserBtn.dataset.editUser));
+            } catch (err) { console.error(err); }
+        }
+
+        const confirmBtn = target.closest('[data-confirm]');
+        if (confirmBtn && !confirm(confirmBtn.dataset.confirm)) e.preventDefault();
+    });
+
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.addEventListener('input', filtrarSinais);
+
+    // Favoritar via AJAX para evitar reload e pulo de scroll
+    const favForm = document.querySelector('form[action*="/favorites/toggle"]');
+    if (favForm) {
+        favForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = favForm.querySelector('button');
+            const span = btn.querySelector('span');
+            const isAdding = !btn.classList.contains('btn-favorited');
+            
+            btn.classList.toggle('btn-favorited');
+            span.innerText = isAdding ? '★ Adicionado aos Favoritos' : '☆ Adicionar aos Favoritos';
+
+            try {
+                const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+                if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+                await fetch(favForm.action, {
+                    method: 'POST',
+                    body: new FormData(favForm),
+                    headers: headers
+                });
+            } catch (err) {
+                console.error("Erro ao favoritar:", err);
+                btn.classList.toggle('btn-favorited');
+                span.innerText = !isAdding ? '★ Adicionado aos Favoritos' : '☆ Adicionar aos Favoritos';
+            }
+        });
+    }
 });
