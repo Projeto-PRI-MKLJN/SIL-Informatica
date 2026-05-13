@@ -1,29 +1,58 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('S.I.L - Perfil')}"></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="~{fragments/layout :: head('Meu Perfil')}"></head>
+
 <body>
     <header th:replace="~{fragments/layout :: header}"></header>
 
-    <main class="container" style="margin-top: 4rem; max-width: 600px;">
-        <div class="animate-fade" style="background: white; padding: 4rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center;">
-            <div style="width: 100px; height: 100px; background: var(--cor-primary-light); color: var(--cor-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 2rem;">
-                👤
+    <main>
+        <div class="container" style="max-width: 600px;">
+            <div class="home-intro" style="margin-bottom: 2rem;">
+                <h1>Meu Perfil</h1>
+                <p>Atualize suas informações pessoais e senha</p>
             </div>
-            
-            <h1 th:text="${currentUser.name}" style="font-family: 'Outfit', sans-serif;">Nome do Usuário</h1>
-            <p th:text="${currentUser.email}" style="color: var(--cor-text-secondary); margin-bottom: 3rem;">email@exemplo.com</p>
-            
-            <hr style="border: none; border-top: 1px solid var(--cor-border); margin-bottom: 2rem;">
-            
-            <div style="text-align: left; margin-bottom: 3rem;">
-                <p><strong>Nível de Acesso:</strong> <span class="categoria-tag" th:text="${currentUser.role}">USER</span></p>
-                <p style="margin-top: 1rem;"><strong>Desde:</strong> <span th:text="${#temporals.format(currentUser.createdAt, 'dd/MM/yyyy')}">01/01/2026</span></p>
+
+            <!-- Feedback Messages -->
+            <div th:if="${success}" style="padding: 1rem; background: var(--cor-success); color: white; border-radius: 8px; margin-bottom: 1.5rem; text-align: center;">
+                <span th:text="${success}"></span>
             </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <a th:href="@{/user/edit}" class="btn">Editar Perfil</a>
-                <a th:href="@{/logout}" class="btn btn-secondary">Sair da Conta</a>
+            <div th:if="${error}" style="padding: 1rem; background: var(--cor-error); color: white; border-radius: 8px; margin-bottom: 1.5rem; text-align: center;">
+                <span th:text="${error}"></span>
             </div>
+
+            <form th:action="@{/users/profile}" th:object="${user}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" th:field="*{name}" required placeholder="Seu nome">
+                    <div style="color: var(--cor-error); font-size: 0.8rem; margin-top: 0.2rem;" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" th:field="*{email}" required placeholder="Seu e-mail">
+                    <div style="color: var(--cor-error); font-size: 0.8rem; margin-top: 0.2rem;" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nova Senha (Opcional)</label>
+                    <input type="password" th:field="*{password}" placeholder="Deixe em branco para manter a atual">
+                    <div style="color: var(--cor-error); font-size: 0.8rem; margin-top: 0.2rem;" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="form-group" style="text-align: center;">
+                    <span class="categoria-tag" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                        Perfil: <span th:text="${user.role == 'ADMIN' ? 'Administrador' : 'Intérprete'}"></span>
+                    </span>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn" style="flex: 1;">Salvar Alterações</button>
+                    <a th:href="@{/users/dashboard}" class="btn btn-secondary" style="flex: 1; text-align: center; line-height: 1.4;">Voltar</a>
+                </div>
+            </form>
         </div>
     </main>
 

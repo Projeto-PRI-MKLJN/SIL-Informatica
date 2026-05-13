@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">S.I.L - Info</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <meta th:if="${_csrf}" name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:if="${_csrf}" name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <script th:src="@{/js/script.js}" defer></script>
 </head>
+
 <body>
 
     <header th:fragment="header" id="main-header">
         <div class="header-content">
             <div class="logo">S.I.L - Info</div>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <nav id="main-nav">
-                <a th:href="@{/signs}">Início</a>
-                <a th:href="@{/favorites}">Favoritos</a>
-                <a th:href="@{/home/about}">Sobre</a>
-                <a th:href="@{/admin/signs}" th:if="${currentUser != null and currentUser.role == 'ADMIN'}">Gerenciar Sinais</a>
-                <a th:href="@{/admin/users}" th:if="${currentUser != null and currentUser.role == 'ADMIN'}">Gerenciar Usuários</a>
-                <a th:href="@{/auth/logout}" th:if="${currentUser != null}">Sair</a>
-                <a th:href="@{/auth/login}" th:if="${currentUser == null}">Entrar</a>
+                <a th:href="@{/users/dashboard}" sec:authorize="isAuthenticated()">Dashboard</a>
+                <a th:href="@{/signs}" sec:authorize="isAuthenticated()">Glossário</a>
+                <a th:href="@{/favorites}" sec:authorize="isAuthenticated()">Favoritos</a>
+                <a th:href="@{/users/profile}" sec:authorize="isAuthenticated()">Meu Perfil</a>
+                <a th:href="@{/home/about}" sec:authorize="isAuthenticated()">Sobre</a>
+                <a th:href="@{/admin}" sec:authorize="hasAnyRole('ADMIN', 'USER')">Painel Admin</a>
+                <a th:href="@{/auth/logout}" sec:authorize="isAuthenticated()">Sair</a>
+                <a th:href="@{/auth/login}" sec:authorize="isAnonymous()">Entrar</a>
             </nav>
         </div>
+        <div class="nav-overlay" id="nav-overlay"></div>
     </header>
 
     <footer th:fragment="footer">
@@ -29,4 +42,5 @@
     </footer>
 
 </body>
+
 </html>

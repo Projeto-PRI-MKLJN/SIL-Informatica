@@ -3,7 +3,6 @@ package com.sil.informatica.modules.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 /// Representa um usuário autenticável do sistema SIL-Informatica.
@@ -27,12 +26,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @NotBlank(message = "A senha é obrigatória")
-    @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     @Column(nullable = false)
     private String password;
 
-    @NotBlank(message = "O cargo (role) é obrigatório")
     @Column(nullable = false)
     private String role;
 
