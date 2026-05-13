@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('S.I.L - Painel Admin')}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container">
+        <div class="dashboard-intro animate-fade">
+            <h1 style="font-family: 'Outfit', sans-serif;">🛡️ Painel Administrativo</h1>
+            <p style="color: var(--cor-text-secondary);">Gerencie os recursos do sistema SIL-Informatica.</p>
+        </div>
+
+        <div class="sinais-grid grid-centered">
+            <a th:href="@{/admin/signs}" class="sinal-card-link">
+                <div class="sinal-card" style="text-align: center; padding: 2rem; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <span style="font-size: 3rem; margin-bottom: 1rem; display: block;">📚</span>
+                    <h3 style="color: var(--cor-primary-dark);">Gerenciar Sinais</h3>
+                    <p style="font-size: 0.9rem;">Adicione, edite ou remova termos do glossário técnico.</p>
+                </div>
+            </a>
+
+            <a th:href="@{/admin/users}" class="sinal-card-link" sec:authorize="hasRole('ADMIN')">
+                <div class="sinal-card" style="text-align: center; padding: 2rem; border: 2px solid transparent; transition: all 0.3s ease;">
+                    <span style="font-size: 3rem; margin-bottom: 1rem; display: block;">👥</span>
+                    <h3 style="color: var(--cor-primary-dark);">Gerenciar Usuários</h3>
+                    <p style="font-size: 0.9rem;">Controle de acesso, permissões e perfis de usuários.</p>
+                </div>
+            </a>
+        </div>
+        
+        <div style="margin-top: 4rem; text-align: center;">
+            <a th:href="@{/users/dashboard}" class="btn btn-secondary">← Voltar ao Dashboard Usuário</a>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

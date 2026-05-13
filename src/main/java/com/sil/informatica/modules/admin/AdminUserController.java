@@ -30,40 +30,25 @@ public class AdminUserController {
     @GetMapping
     public String listUsers(Model model) {
         model.addAttribute("users", userService.findAll());
+        model.addAttribute("user", new User());
         return "admin/users/index";
     }
 
-    /// Exibe o formulário de edição para um usuário existente.
-    ///
-    /// @param id ID do usuário a ser editado.
-    /// @param model O modelo do Spring.
-    /// @return O caminho da view do formulário.
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        return userService.findById(id)
-                .map(user -> {
-                    model.addAttribute("user", user);
-                    return "admin/users/form";
-                })
-                .orElse("redirect:/admin/users");
-    }
-
-    /// Processa a atualização de um usuário.
-    ///
-    /// @param id ID do usuário.
-    /// @param user Dados atualizados.
-    /// @return Redirecionamento após sucesso.
-    @org.springframework.web.bind.annotation.PostMapping("/{id}")
-    public String updateUser(@PathVariable Long id, User user) {
-        return userService.findById(id)
-                .map(existingUser -> {
-                    existingUser.setName(user.getName());
-                    existingUser.setEmail(user.getEmail());
-                    existingUser.setRole(user.getRole());
-                    userService.save(existingUser);
-                    return "redirect:/admin/users";
-                })
-                .orElse("redirect:/admin/users");
+    /// Processa a criação ou atualização de um usuário.
+    @org.springframework.web.bind.annotation.PostMapping
+    public String saveUser(@jakarta.validation.Valid User user, org.springframework.validation.BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("users", userService.findAll());
+            return "admin/users/index";
+        }
+        try {
+            userService.save(user);
+        } catch (RuntimeException e) {
+            result.rejectValue("email", "error.user", e.getMessage());
+            model.addAttribute("users", userService.findAll());
+            return "admin/users/index";
+        }
+        return "redirect:/admin/users";
     }
 
     /// Remove um usuário do sistema.
