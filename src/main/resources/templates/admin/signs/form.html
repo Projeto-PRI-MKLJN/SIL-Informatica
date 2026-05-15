@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('S.I.L - Formulário')}"></head>
+<body>
+    <header th:replace="~{fragments/layout :: header}"></header>
+
+    <main class="container" style="margin-top: 4rem; max-width: 800px;">
+        <div class="animate-fade" style="background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <h1 th:text="${sign.id == null ? 'Novo Sinal' : 'Editar Sinal'}" style="font-family: 'Outfit', sans-serif; color: var(--cor-primary-dark);">Novo Sinal</h1>
+            
+            <form th:action="${sign.id == null ? '/admin/signs' : '/admin/signs/' + sign.id}" th:object="${sign}" method="post" style="margin-top: 2rem;">
+                <div class="form-group">
+                    <label>Termo</label>
+                    <input type="text" th:field="*{term}" required placeholder="Ex: Algoritmo">
+                    <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea th:field="*{description}" rows="4" required placeholder="Explique o termo de forma técnica e clara"></textarea>
+                    <div style="color: var(--cor-error); font-size: 0.8rem;" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select th:field="*{category}" required>
+                        <option value="">Selecione...</option>
+                        <option value="Lógica">Lógica</option>
+                        <option value="Estruturas de Dados">Estruturas de Dados</option>
+                        <option value="Banco de Dados">Banco de Dados</option>
+                        <option value="Programação">Programação</option>
+                        <option value="Segurança">Segurança</option>
+                        <option value="Redes">Redes</option>
+                        <option value="Web">Web</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>URL do Vídeo</label>
+                    <input type="text" th:field="*{videoUrl}" placeholder="Ex: https://youtube.com/...">
+                </div>
+
+                <div style="display: flex; gap: 1.5rem; margin-top: 3rem; border-top: 1px solid var(--cor-border); padding-top: 2rem;">
+                    <button type="submit" class="btn" style="flex: 1;">Salvar Sinal</button>
+                    <a th:href="@{/admin/signs}" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none;">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -47,14 +47,6 @@ public class SignService {
         return signRepository.findByTermContainingIgnoreCase(term);
     }
 
-    /// Busca sinais que comecem com a letra informada.
-    public List<Sign> searchByLetter(String letter) {
-        if (letter == null || letter.isEmpty()) {
-            return signRepository.findAll();
-        }
-        return signRepository.findByTermStartingWithIgnoreCase(letter);
-    }
-
     /// Salva ou atualiza um sinal no sistema.
     ///
     /// @param sign O sinal a ser persistido.
